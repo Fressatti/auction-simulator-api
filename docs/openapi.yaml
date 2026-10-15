@@ -8,14 +8,14 @@ info:
     profit = estimatedResalePrice - totalCost. Profit margin percentage = estimatedProfit
     / estimatedResalePrice * 100, rounded to two decimal places with HALF_UP.
 servers:
-- url: http://localhost:8080
+  - url: http://localhost:8080
 tags:
-- name: Simulations
+  - name: Simulations
 paths:
   /simulations:
     post:
       tags:
-      - Simulations
+        - Simulations
       operationId: createSimulation
       requestBody:
         required: true
@@ -39,7 +39,7 @@ paths:
       summary: createSimulation
     get:
       tags:
-      - Simulations
+        - Simulations
       operationId: listSimulations
       responses:
         '200':
@@ -55,23 +55,23 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
           description: Invalid request or parameters.
       parameters:
-      - name: page
-        in: query
-        required: false
-        schema:
-          type: integer
-          format: int32
-          minimum: 0
-          default: 0
-      - name: size
-        in: query
-        required: false
-        schema:
-          type: integer
-          format: int32
-          minimum: 1
-          maximum: 100
-          default: 20
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            default: 0
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 20
       summary: listSimulations
       description: 'Pagination is applied in the database. Order by createdAt DESC,
         id DESC. Fetch up to size + 1 records to determine hasNextPage, returning
@@ -79,15 +79,15 @@ paths:
         false. Offset pagination can shift under concurrent writes.'
   /simulations/{id}:
     parameters:
-    - name: id
-      in: path
-      required: true
-      schema:
-        type: string
-        format: uuid
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
     get:
       tags:
-      - Simulations
+        - Simulations
       operationId: getSimulationById
       responses:
         '200':
@@ -111,7 +111,7 @@ paths:
       summary: getSimulationById
     put:
       tags:
-      - Simulations
+        - Simulations
       operationId: updateSimulation
       responses:
         '200':
@@ -143,7 +143,7 @@ paths:
         createdAt. Return 404 if the simulation does not exist.
     delete:
       tags:
-      - Simulations
+        - Simulations
       operationId: deleteSimulation
       responses:
         '204':
@@ -167,8 +167,8 @@ components:
       type: object
       additionalProperties: false
       required:
-      - vehicle
-      - values
+        - vehicle
+        - values
       properties:
         vehicle:
           $ref: '#/components/schemas/Vehicle'
@@ -178,12 +178,12 @@ components:
       type: object
       additionalProperties: false
       required:
-      - make
-      - model
-      - color
-      - auctionDate
-      - auctioneer
-      - damageClassification
+        - make
+        - model
+        - color
+        - auctionDate
+        - auctioneer
+        - damageClassification
       properties:
         make:
           type: string
@@ -211,17 +211,17 @@ components:
         damageClassification:
           type: string
           enum:
-          - MINOR_DAMAGE
-          - MODERATE_DAMAGE
-          - NOT_INFORMED
+            - MINOR_DAMAGE
+            - MODERATE_DAMAGE
+            - NOT_INFORMED
     SimulationValues:
       type: object
       additionalProperties: false
       required:
-      - bidAmount
-      - commissionPercentage
-      - otherCosts
-      - estimatedResalePrice
+        - bidAmount
+        - commissionPercentage
+        - otherCosts
+        - estimatedResalePrice
       properties:
         bidAmount:
           type: number
@@ -246,34 +246,22 @@ components:
       type: object
       additionalProperties: false
       required:
-      - id
-      - vehicle
-      - values
-      - result
-      - createdAt
+        - id
+        - result
       properties:
         id:
           type: string
           format: uuid
-        vehicle:
-          $ref: '#/components/schemas/Vehicle'
-        values:
-          $ref: '#/components/schemas/SimulationValues'
         result:
           $ref: '#/components/schemas/SimulationResult'
-        createdAt:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Server-generated creation timestamp in UTC, preserved on update.
     SimulationResult:
       type: object
       additionalProperties: false
       required:
-      - commissionAmount
-      - totalCost
-      - estimatedProfit
-      - profitMarginPercentage
+        - commissionAmount
+        - totalCost
+        - estimatedProfit
+        - profitMarginPercentage
       properties:
         commissionAmount:
           type: number
@@ -293,9 +281,9 @@ components:
       type: object
       additionalProperties: false
       required:
-      - code
-      - message
-      - fields
+        - code
+        - message
+        - fields
       properties:
         code:
           type: string
@@ -307,8 +295,8 @@ components:
             type: object
             additionalProperties: false
             required:
-            - field
-            - message
+              - field
+              - message
             properties:
               field:
                 type: string
@@ -318,10 +306,10 @@ components:
       type: object
       additionalProperties: false
       required:
-      - items
-      - page
-      - size
-      - hasNextPage
+        - items
+        - page
+        - size
+        - hasNextPage
       properties:
         items:
           type: array

@@ -16,7 +16,22 @@ public class SimulationApiMapper {
     }
 
     public SimulationResponse toResponse(Simulation simulation) {
-        // TODO: Convert the domain model to the generated response DTO.
-        return null;
+        final var result = simulation.result();
+
+        final var responseResult =
+                new com.example.auction.adapter.in.web.dto.SimulationResult();
+
+        responseResult.setCommissionAmount(result.commissionAmount());
+        responseResult.setTotalCost(result.totalCost());
+        responseResult.setEstimatedProfit(result.estimatedProfit());
+        responseResult.setProfitMarginPercentage(
+                result.profitMarginPercentage()
+        );
+
+        final var response = new SimulationResponse();
+        response.setId(simulation.id());
+        response.setResult(responseResult);
+
+        return response;
     }
 }

@@ -4,7 +4,9 @@ import com.example.auction.adapter.in.web.api.SimulationsApiDelegate;
 import com.example.auction.adapter.in.web.dto.CreateSimulationRequest;
 import com.example.auction.adapter.in.web.dto.SimulationPage;
 import com.example.auction.adapter.in.web.dto.SimulationResponse;
+
 import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -30,9 +32,9 @@ public class SimulationApiDelegateAdapter implements SimulationsApiDelegate {
 
     @Override
     public ResponseEntity<SimulationResponse> createSimulation(CreateSimulationRequest request) {
-        CreateSimulationCommand command = mapper.toCommand(request);
-        Simulation simulation = createSimulationUseCase.execute(command);
-        SimulationResponse response = mapper.toResponse(simulation);
+        final var command = mapper.toCommand(request);
+        final var simulation = createSimulationUseCase.execute(command);
+        final var response = mapper.toResponse(simulation);
         // TODO: Return HTTP 201 with response after implementing the dummy flow.
         return null;
     }

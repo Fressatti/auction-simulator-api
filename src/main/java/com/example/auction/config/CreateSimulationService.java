@@ -1,4 +1,4 @@
-package com.example.auction.application.service;
+package com.example.auction.config;
 
 import com.example.auction.application.port.in.CreateSimulationUseCase;
 import com.example.auction.application.port.in.command.CreateSimulationCommand;
@@ -7,19 +7,22 @@ import com.example.auction.domain.model.Simulation;
 import com.example.auction.domain.service.SimulationCalculator;
 
 public class CreateSimulationService implements CreateSimulationUseCase {
+
     private final SimulationCalculator calculator;
     private final SimulationRepository repository;
 
-    public CreateSimulationService(SimulationCalculator calculator, SimulationRepository repository) {
+    public CreateSimulationService(
+            SimulationCalculator calculator,
+            SimulationRepository repository) {
         this.calculator = calculator;
         this.repository = repository;
     }
 
     @Override
     public Simulation execute(CreateSimulationCommand command) {
-        // TODO: Calculate using calculator.calculate(command.values()).
-        // TODO: Build Simulation with an ID, creation timestamp and calculation result.
-        // TODO: Return repository.save(simulation).
+        final var result = calculator.calculate(command.values());
+
+        // TODO: Create and persist the simulation.
         return null;
     }
 }
