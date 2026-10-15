@@ -36,7 +36,7 @@ public class SimulationExceptionHandler {
     public ResponseEntity<ApiError> handleTypeMismatch(MethodArgumentTypeMismatchException exception) {
         log.warn("Request parameter type mismatch requestId={} parameter={}",
                 MDC.get("requestId"), exception.getName());
-        return error(400, "INVALID_PARAMETER", "Invalid request parameter.",
+        return error(400, "INVALID_PARAMETER", "Parâmetro de requisição inválido.",
                 List.of(new ApiError.FieldViolation(exception.getName(), "INVALID_FORMAT", "Formato inválido para o parâmetro.")));
     }
 
@@ -44,7 +44,7 @@ public class SimulationExceptionHandler {
     public ResponseEntity<ApiError> handleMethodValidation(HandlerMethodValidationException exception) {
         final var status = exception.getStatusCode().value();
         log.warn("Method validation failed requestId={} status={}", MDC.get("requestId"), status);
-        return error(status, "VALIDATION_ERROR", "Request or response validation failed.", List.of());
+        return error(status, "VALIDATION_ERROR", "Falha na validação da requisição ou da resposta.", List.of());
     }
 
     @ExceptionHandler(SimulationNotFoundException.class)
@@ -59,10 +59,10 @@ public class SimulationExceptionHandler {
             final var status = webError.getStatusCode().value();
             log.warn("HTTP framework error requestId={} status={} type={}",
                     MDC.get("requestId"), status, exception.getClass().getSimpleName());
-            return error(status, "HTTP_ERROR", "HTTP request could not be processed.", List.of());
+            return error(status, "HTTP_ERROR", "Não foi possível processar a requisição HTTP.", List.of());
         }
         log.error("Unexpected request failure requestId=" + MDC.get("requestId"), exception);
-        return error(500, "INTERNAL_ERROR", "An unexpected error occurred.", List.of());
+        return error(500, "INTERNAL_ERROR", "Ocorreu um erro interno inesperado.", List.of());
     }
 
     private ResponseEntity<ApiError> error(
@@ -70,3 +70,4 @@ public class SimulationExceptionHandler {
         return ResponseEntity.status(status).body(ApiError.of(code, message, fields));
     }
 }
+
