@@ -22,7 +22,13 @@ public class CreateSimulationService implements CreateSimulationUseCase {
     public Simulation execute(CreateSimulationCommand command) {
         final var result = calculator.calculate(command.values());
 
-        // TODO: Create and persist the simulation.
-        return null;
+        final var simulation = new Simulation(
+                java.util.UUID.randomUUID(),
+                command.vehicle(),
+                command.values(),
+                result,
+                java.time.Instant.now()
+        );
+        return repository.save(simulation);
     }
 }

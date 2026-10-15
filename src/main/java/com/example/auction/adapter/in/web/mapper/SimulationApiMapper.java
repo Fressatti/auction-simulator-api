@@ -10,9 +10,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class SimulationApiMapper {
     public CreateSimulationCommand toCommand(CreateSimulationRequest request) {
-        // TODO: Convert generated Vehicle and SimulationValues DTOs to domain records.
-        // TODO: Convert the generated damage enum to the domain DamageClassification.
-        return null;
+        final var vehicle = request.getVehicle();
+        final var values = request.getValues();
+        return new CreateSimulationCommand(
+                new com.example.auction.domain.model.Vehicle(
+                        vehicle.getMake(), vehicle.getModel(), vehicle.getColor(),
+                        vehicle.getAuctionDate(), vehicle.getAuctioneer(),
+                        com.example.auction.domain.model.DamageClassification.valueOf(
+                                vehicle.getDamageClassification().getValue())),
+                new com.example.auction.domain.model.SimulationValues(
+                        values.getBidAmount(), values.getCommissionPercentage(),
+                        values.getOtherCosts(), values.getEstimatedResalePrice())
+        );
     }
 
     public SimulationResponse toResponse(Simulation simulation) {

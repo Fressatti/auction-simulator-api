@@ -103,3 +103,21 @@ not configured.
 
 The database files are excluded from Git. Use an explicit non-local profile
 and its own database configuration for other environments.
+
+## Simulation inserts
+
+`POST /simulations` now maps the request, calculates results using the domain
+calculator, assigns a UUID and UTC creation timestamp, and saves a row in
+`simulations` through the JPA output adapter. The response contains `id` and
+`result`. Vehicle, input values, results and timestamp are stored in the table.
+Other HTTP operations remain unimplemented (501).
+
+Start with JDK 25 and the local profile, then send a valid request matching
+`docs/openapi.yaml`. Hibernate creates the table on startup.
+The H2 configuration section above describes the initial setup; the JPA entity
+and repository adapter are now implemented.
+
+Run `./mvnw test` (Windows: `.\mvnw.cmd test`) with JDK 25.
+`SimulationPersistenceIntegrationTests` exercises the create delegate through
+the real mapper, calculator, service and JPA adapter, and checks the inserted
+row in an isolated in-memory H2 database. It does not exercise HTTP transport.

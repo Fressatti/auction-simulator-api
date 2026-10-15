@@ -35,8 +35,7 @@ public class SimulationApiDelegateAdapter implements SimulationsApiDelegate {
         final var command = mapper.toCommand(request);
         final var simulation = createSimulationUseCase.execute(command);
         final var response = mapper.toResponse(simulation);
-        // TODO: Return HTTP 201 with response after implementing the dummy flow.
-        return null;
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @Override
