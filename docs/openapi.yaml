@@ -1,0 +1,341 @@
+openapi: 3.0.3
+info:
+  title: Auction Simulation API
+  version: 0.4.0
+  description: Vehicle auction purchase and resale simulations. Amounts are in BRL.
+    Commission = bidAmount * commissionPercentage / 100; round commission to two decimal
+    places with HALF_UP. Total cost = bidAmount + commissionAmount + otherCosts. Estimated
+    profit = estimatedResalePrice - totalCost. Profit margin percentage = estimatedProfit
+    / estimatedResalePrice * 100, rounded to two decimal places with HALF_UP.
+servers:
+- url: http://localhost:8080
+tags:
+- name: Simulations
+paths:
+  /simulations:
+    post:
+      tags:
+      - Simulations
+      operationId: createSimulation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSimulationRequest'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimulationResponse'
+          description: Simulation created.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Invalid request or parameters.
+      summary: createSimulation
+    get:
+      tags:
+      - Simulations
+      operationId: listSimulations
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimulationPage'
+          description: Successful operation.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Invalid request or parameters.
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          minimum: 0
+          default: 0
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+          default: 20
+      summary: listSimulations
+      description: 'Pagination is applied in the database. Order by createdAt DESC,
+        id DESC. Fetch up to size + 1 records to determine hasNextPage, returning
+        at most size. No total count. Empty pages return items: [] and hasNextPage:
+        false. Offset pagination can shift under concurrent writes.'
+  /simulations/{id}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    get:
+      tags:
+      - Simulations
+      operationId: getSimulationById
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimulationResponse'
+          description: Successful operation.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Invalid request or parameters.
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Simulation not found.
+      summary: getSimulationById
+    put:
+      tags:
+      - Simulations
+      operationId: updateSimulation
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimulationResponse'
+          description: Successful operation.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Invalid request or parameters.
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Simulation not found.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSimulationRequest'
+      summary: updateSimulation
+      description: Replace all input fields and recalculate results. Preserve id and
+        createdAt. Return 404 if the simulation does not exist.
+    delete:
+      tags:
+      - Simulations
+      operationId: deleteSimulation
+      responses:
+        '204':
+          description: Simulation deleted. No response body.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Invalid request or parameters.
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Simulation not found.
+      summary: deleteSimulation
+components:
+  schemas:
+    CreateSimulationRequest:
+      type: object
+      additionalProperties: false
+      required:
+      - vehicle
+      - values
+      properties:
+        vehicle:
+          $ref: '#/components/schemas/Vehicle'
+        values:
+          $ref: '#/components/schemas/SimulationValues'
+    Vehicle:
+      type: object
+      additionalProperties: false
+      required:
+      - make
+      - model
+      - color
+      - auctionDate
+      - auctioneer
+      - damageClassification
+      properties:
+        make:
+          type: string
+          minLength: 1
+          maxLength: 80
+          pattern: \S
+        model:
+          type: string
+          minLength: 1
+          maxLength: 120
+          pattern: \S
+        color:
+          type: string
+          minLength: 1
+          maxLength: 40
+          pattern: \S
+        auctionDate:
+          type: string
+          format: date
+        auctioneer:
+          type: string
+          minLength: 1
+          maxLength: 120
+          pattern: \S
+        damageClassification:
+          type: string
+          enum:
+          - MINOR_DAMAGE
+          - MODERATE_DAMAGE
+          - NOT_INFORMED
+    SimulationValues:
+      type: object
+      additionalProperties: false
+      required:
+      - bidAmount
+      - commissionPercentage
+      - otherCosts
+      - estimatedResalePrice
+      properties:
+        bidAmount:
+          type: number
+          minimum: 0
+          exclusiveMinimum: true
+          multipleOf: 0.01
+        commissionPercentage:
+          type: number
+          minimum: 0
+          maximum: 100
+          multipleOf: 0.01
+        otherCosts:
+          type: number
+          minimum: 0
+          multipleOf: 0.01
+        estimatedResalePrice:
+          type: number
+          minimum: 0
+          exclusiveMinimum: true
+          multipleOf: 0.01
+    SimulationResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - vehicle
+      - values
+      - result
+      - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        vehicle:
+          $ref: '#/components/schemas/Vehicle'
+        values:
+          $ref: '#/components/schemas/SimulationValues'
+        result:
+          $ref: '#/components/schemas/SimulationResult'
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Server-generated creation timestamp in UTC, preserved on update.
+    SimulationResult:
+      type: object
+      additionalProperties: false
+      required:
+      - commissionAmount
+      - totalCost
+      - estimatedProfit
+      - profitMarginPercentage
+      properties:
+        commissionAmount:
+          type: number
+          minimum: 0
+          multipleOf: 0.01
+        totalCost:
+          type: number
+          minimum: 0
+          multipleOf: 0.01
+        estimatedProfit:
+          type: number
+          multipleOf: 0.01
+        profitMarginPercentage:
+          type: number
+          multipleOf: 0.01
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - code
+      - message
+      - fields
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        fields:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - field
+            - message
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+    SimulationPage:
+      type: object
+      additionalProperties: false
+      required:
+      - items
+      - page
+      - size
+      - hasNextPage
+      properties:
+        items:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/SimulationResponse'
+        page:
+          type: integer
+          format: int32
+          minimum: 0
+        size:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+        hasNextPage:
+          type: boolean
