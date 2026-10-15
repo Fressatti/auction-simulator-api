@@ -94,7 +94,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SimulationResponse'
+                $ref: '#/components/schemas/SimulationDetailResponse'
           description: Successful operation.
         '400':
           content:
@@ -254,6 +254,28 @@ components:
           format: uuid
         result:
           $ref: '#/components/schemas/SimulationResult'
+    SimulationDetailResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - vehicle
+        - values
+        - result
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        vehicle:
+          $ref: '#/components/schemas/Vehicle'
+        values:
+          $ref: '#/components/schemas/SimulationValues'
+        result:
+          $ref: '#/components/schemas/SimulationResult'
+        createdAt:
+          type: string
+          format: date-time
     SimulationResult:
       type: object
       additionalProperties: false
