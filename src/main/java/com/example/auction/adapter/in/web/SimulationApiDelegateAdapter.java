@@ -21,6 +21,9 @@ import com.example.auction.domain.model.Simulation;
  */
 @Component
 public class SimulationApiDelegateAdapter implements SimulationsApiDelegate {
+    private static final org.slf4j.Logger log =
+            org.slf4j.LoggerFactory.getLogger(SimulationApiDelegateAdapter.class);
+
     private final CreateSimulationUseCase createSimulationUseCase;
     private final SimulationApiMapper mapper;
     private final com.example.auction.application.port.in.GetSimulationUseCase getSimulationUseCase;
@@ -35,9 +38,12 @@ public class SimulationApiDelegateAdapter implements SimulationsApiDelegate {
 
     @Override
     public ResponseEntity<SimulationResponse> createSimulation(CreateSimulationRequest request) {
+        log.info("Simulation creation started requestId={}", org.slf4j.MDC.get("requestId"));
         final var command = mapper.toCommand(request);
         final var simulation = createSimulationUseCase.execute(command);
         final var response = mapper.toResponse(simulation);
+        log.info("Simulation creation completed requestId={} simulationId={}",
+                org.slf4j.MDC.get("requestId"), simulation.id());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -48,7 +54,12 @@ public class SimulationApiDelegateAdapter implements SimulationsApiDelegate {
 
     @Override
     public ResponseEntity<SimulationResponse> getSimulationById(UUID id) {
-        return ResponseEntity.ok(mapper.toResponse(getSimulationUseCase.execute(id)));
+        log.info("Simulation lookup started requestId={} simulationId={}",
+                org.slf4j.MDC.get("requestId"), id);
+        final var response = mapper.toResponse(getSimulationUseCase.execute(id));
+        log.info("Simulation lookup completed requestId={} simulationId={}",
+                org.slf4j.MDC.get("requestId"), id);
+        return ResponseEntity.ok(response);
     }
 
     @Override

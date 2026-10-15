@@ -56,4 +56,43 @@ class GetSimulationHttpIntegrationTests {
         assertTrue(response.body().contains("\"message\""));
         assertTrue(response.body().contains("\"fields\""));
     }
+
+    private HttpResponse<String> post(String body) throws Exception {
+        try (var client = HttpClient.newHttpClient()) {
+            return client.send(HttpRequest.newBuilder(
+                    URI.create("http://localhost:" + port + "/simulations"))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(body)).build(),
+                    HttpResponse.BodyHandlers.ofString());
+        }
+    }
+
+    @Test
+    void missingFieldsReturnValidationErrorAndRequestId() throws Exception {
+        var response = post("{}");
+        assertEquals(400, response.statusCode());
+        assertTrue(response.body().contains("VALIDATION_ERROR"));
+        assertTrue(response.body().contains("\"field\""));
+        assertTrue(response.headers().firstValue("X-Request-ID").isPresent());
+        UUID.fromString(response.headers().firstValue("X-Request-ID").orElseThrow());
+    }
+
+    @Test
+    void malformedJsonReturnsReadableError() throws Exception {
+        var response = post("{");
+        assertEquals(400, response.statusCode());
+        assertTrue(response.body().contains("INVALID_JSON"));
+        assertTrue(response.headers().firstValue("X-Request-ID").isPresent());
+    }
+
+    @Test
+    void invalidUuidReturnsParameterError() throws Exception {
+        try (var client = HttpClient.newHttpClient()) {
+            var response = client.send(HttpRequest.newBuilder(
+                    URI.create("http://localhost:" + port + "/simulations/not-a-uuid"))
+                    .GET().build(), HttpResponse.BodyHandlers.ofString());
+            assertEquals(400, response.statusCode());
+            assertTrue(response.body().contains("INVALID_PARAMETER"));
+        }
+    }
 }

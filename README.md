@@ -137,3 +137,23 @@ For a manual file-persistence check, create a simulation with POST, retain its
 ID, stop the application, restart from the same working directory using the
 local profile, then call GET with that ID. This restart scenario is not covered
 by the in-memory integration tests.
+
+## Request diagnostics
+
+Each request receives a server-generated `X-Request-ID` response header.
+Search application logs for that ID to correlate request start, completion,
+creation/lookup stages, and failures. Completion logs include method, path,
+status, and duration. Request bodies and query strings are not logged.
+
+HTTP 400 responses distinguish `VALIDATION_ERROR` (invalid fields),
+`INVALID_JSON` (missing/malformed body, type or enum mismatch), and
+`INVALID_PARAMETER` (such as an invalid UUID). Error bodies follow the
+contract's `code`, `message`, `fields` structure. Validation field errors
+include field names and constraint messages. Unexpected exceptions are logged
+with stack traces and return a generic HTTP 500 message. Framework HTTP errors
+retain their status code.
+
+The HTTP integration tests include missing fields, malformed JSON and an
+invalid UUID. Run them with JDK 25. For a reported 400, retain the response
+body and X-Request-ID to identify its cause; adding diagnostics alone does not
+establish the cause of an earlier failed request.
