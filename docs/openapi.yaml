@@ -189,17 +189,17 @@ components:
           type: string
           minLength: 1
           maxLength: 80
-          pattern: \S
+          pattern: '.*\S.*'
         model:
           type: string
           minLength: 1
           maxLength: 120
-          pattern: \S
+          pattern: '.*\S.*'
         color:
           type: string
           minLength: 1
           maxLength: 40
-          pattern: \S
+          pattern: '.*\S.*'
         auctionDate:
           type: string
           format: date
@@ -207,7 +207,7 @@ components:
           type: string
           minLength: 1
           maxLength: 120
-          pattern: \S
+          pattern: '.*\S.*'
         damageClassification:
           type: string
           enum:
@@ -289,6 +289,9 @@ components:
           type: string
         message:
           type: string
+        requestId:
+          type: string
+          description: Correlates the response with X-Request-ID and server logs.
         fields:
           type: array
           items:
@@ -300,6 +303,9 @@ components:
             properties:
               field:
                 type: string
+              code:
+                type: string
+                description: Stable field error code, such as REQUIRED or INVALID_FORMAT.
               message:
                 type: string
     SimulationPage:
