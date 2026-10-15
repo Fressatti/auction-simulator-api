@@ -8,13 +8,12 @@ import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.jdbc.core.JdbcTemplate;
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(properties = {
-        "spring.datasource.url=jdbc:h2:mem:simulation-inserts;DB_CLOSE_DELAY=-1",
-        "spring.jpa.hibernate.ddl-auto=create-drop"
-})
+@ActiveProfiles("test")
+@SpringBootTest
 class SimulationPersistenceIntegrationTests {
     @Autowired SimulationApiDelegateAdapter delegate;
     @Autowired JdbcTemplate jdbc;
@@ -55,3 +54,4 @@ class SimulationPersistenceIntegrationTests {
         assertEquals(new BigDecimal("3000.00"), row.get("ESTIMATED_PROFIT"));
     }
 }
+
