@@ -7,18 +7,34 @@ import com.example.auction.adapter.in.web.dto.SimulationResponse;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
+import com.example.auction.adapter.in.web.mapper.SimulationApiMapper;
+import com.example.auction.application.port.in.CreateSimulationUseCase;
+import com.example.auction.application.port.in.command.CreateSimulationCommand;
+import com.example.auction.domain.model.Simulation;
 
 /**
  * Handwritten HTTP adapter. Replace each placeholder with a call to an application use case.
  * The generated controller delegates to this Spring bean.
  */
-@Service
-public class SimulationApiDelegateImpl implements SimulationsApiDelegate {
+@Component
+public class SimulationApiDelegateAdapter implements SimulationsApiDelegate {
+    private final CreateSimulationUseCase createSimulationUseCase;
+    private final SimulationApiMapper mapper;
+
+    public SimulationApiDelegateAdapter(CreateSimulationUseCase createSimulationUseCase,
+                                        SimulationApiMapper mapper) {
+        this.createSimulationUseCase = createSimulationUseCase;
+        this.mapper = mapper;
+    }
 
     @Override
     public ResponseEntity<SimulationResponse> createSimulation(CreateSimulationRequest request) {
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        CreateSimulationCommand command = mapper.toCommand(request);
+        Simulation simulation = createSimulationUseCase.execute(command);
+        SimulationResponse response = mapper.toResponse(simulation);
+        // TODO: Return HTTP 201 with response after implementing the dummy flow.
+        return null;
     }
 
     @Override
