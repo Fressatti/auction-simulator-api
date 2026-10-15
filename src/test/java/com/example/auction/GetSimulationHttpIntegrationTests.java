@@ -42,8 +42,25 @@ class GetSimulationHttpIntegrationTests {
         assertTrue(response.body().contains(simulation.id().toString()));
         assertTrue(response.body().contains("\"result\""));
         assertTrue(response.body().contains("\"estimatedProfit\""));
-        assertFalse(response.body().contains("\"vehicle\""));
-        assertFalse(response.body().contains("\"values\""));
+        var body = new tools.jackson.databind.json.JsonMapper().readTree(response.body());
+        assertEquals(simulation.id().toString(), body.path("id").asString());
+        assertEquals("Peugeot", body.path("vehicle").path("make").asString());
+        assertEquals("207", body.path("vehicle").path("model").asString());
+        assertEquals("Red", body.path("vehicle").path("color").asString());
+        assertEquals("2026-10-14", body.path("vehicle").path("auctionDate").asString());
+        assertEquals("Example", body.path("vehicle").path("auctioneer").asString());
+        assertEquals("MINOR_DAMAGE", body.path("vehicle").path("damageClassification").asString());
+        assertEquals(10000.0, body.path("values").path("bidAmount").asDouble());
+        assertEquals(5.0, body.path("values").path("commissionPercentage").asDouble());
+        assertEquals(1500.0, body.path("values").path("otherCosts").asDouble());
+        assertEquals(15000.0, body.path("values").path("estimatedResalePrice").asDouble());
+        assertEquals(500.0, body.path("result").path("commissionAmount").asDouble());
+        assertEquals(12000.0, body.path("result").path("totalCost").asDouble());
+        assertEquals(3000.0, body.path("result").path("estimatedProfit").asDouble());
+        assertEquals(20.0, body.path("result").path("profitMarginPercentage").asDouble());
+        assertEquals(simulation.createdAt().truncatedTo(java.time.temporal.ChronoUnit.MICROS),
+                java.time.Instant.parse(body.path("createdAt").asString())
+                        .truncatedTo(java.time.temporal.ChronoUnit.MICROS));
     }
 
     @Test
