@@ -91,7 +91,18 @@ class GetSimulationHttpIntegrationTests {
         assertTrue(response.body().contains("VALIDATION_ERROR"));
         assertTrue(response.body().contains("\"field\""));
         assertTrue(response.headers().firstValue("X-Request-ID").isPresent());
-        UUID.fromString(response.headers().firstValue("X-Request-ID").orElseThrow());
+        var body = new tools.jackson.databind.json.JsonMapper().readTree(response.body());
+        var requestId = response.headers().firstValue("X-Request-ID").orElseThrow();
+        UUID.fromString(requestId);
+        assertEquals(requestId, body.path("requestId").asString());
+        assertEquals("VALIDATION_ERROR", body.path("code").asString());
+        assertTrue(body.path("fields").isArray());
+        assertFalse(body.path("fields").isEmpty());
+        for (var field : body.path("fields")) {
+            assertFalse(field.path("field").asString().isBlank());
+            assertEquals("REQUIRED", field.path("code").asString());
+            assertFalse(field.path("message").asString().isBlank());
+        }
     }
 
     @Test
