@@ -83,3 +83,23 @@ Returning null is temporary teaching scaffolding, not production behavior.
 
 The repository POM still targets Java 17. A local change to Java 25 has not been published here; this skeleton does not overwrite that setting.
 No build, tests or generation were executed for this skeleton, as requested.
+
+## Local H2 configuration
+
+The project targets Java 25. Run the Maven Wrapper with JDK 25.
+
+The default profile is `local`, which configures Spring Data JPA and an H2
+file database at `./data/auction-simulator.mv.db`. This path is relative to
+the process working directory. Restart from the same directory to reuse data.
+
+Run on Windows: `.\mvnw.cmd spring-boot:run`.
+JDBC URL: `jdbc:h2:file:./data/auction-simulator`.
+Username: `sa`; password: empty (local development only).
+
+Hibernate uses `ddl-auto=update` for local development. Tables are created
+only when JPA entities are added. This configuration does not implement
+`SimulationRepository` or save simulations yet. The H2 browser console is
+not configured.
+
+The database files are excluded from Git. Use an explicit non-local profile
+and its own database configuration for other environments.
