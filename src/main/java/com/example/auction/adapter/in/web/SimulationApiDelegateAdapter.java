@@ -4,6 +4,7 @@ import com.example.auction.adapter.in.web.api.SimulationsApiDelegate;
 import com.example.auction.adapter.in.web.dto.CreateSimulationRequest;
 import com.example.auction.adapter.in.web.dto.SimulationPage;
 import com.example.auction.adapter.in.web.dto.SimulationResponse;
+import com.example.auction.adapter.in.web.dto.SimulationDetailResponse;
 
 import java.util.UUID;
 
@@ -53,10 +54,10 @@ public class SimulationApiDelegateAdapter implements SimulationsApiDelegate {
     }
 
     @Override
-    public ResponseEntity<SimulationResponse> getSimulationById(UUID id) {
+    public ResponseEntity<SimulationDetailResponse> getSimulationById(UUID id) {
         log.info("Simulation lookup started requestId={} simulationId={}",
                 org.slf4j.MDC.get("requestId"), id);
-        final var response = mapper.toResponse(getSimulationUseCase.execute(id));
+        final var response = mapper.toDetailResponse(getSimulationUseCase.execute(id));
         log.info("Simulation lookup completed requestId={} simulationId={}",
                 org.slf4j.MDC.get("requestId"), id);
         return ResponseEntity.ok(response);
