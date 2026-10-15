@@ -95,4 +95,46 @@ class GetSimulationHttpIntegrationTests {
             assertTrue(response.body().contains("INVALID_PARAMETER"));
         }
     }
+
+    private static final String VALID_REQUEST = """
+            {"vehicle":{"make":"Peugeot","model":"207","color":"Red",
+            "auctionDate":"2026-10-14","auctioneer":"Example","damageClassification":"MINOR_DAMAGE"},
+            "values":{"bidAmount":10000,"commissionPercentage":5,"otherCosts":1500,
+            "estimatedResalePrice":15000}}
+            """;
+
+    @Test
+    void validTextFieldsAreAcceptedOverHttp() throws Exception {
+        assertEquals(201, post(VALID_REQUEST).statusCode());
+    }
+
+    @Test
+    void blankMakeHasReadableFieldError() throws Exception {
+        var response = post(VALID_REQUEST.replace("Peugeot", "   "));
+        assertEquals(400, response.statusCode());
+        assertTrue(response.body().contains("vehicle.make"));
+        assertTrue(response.body().contains("INVALID_FORMAT"));
+        assertTrue(response.body().contains("caractere diferente de espaço"));
+        var requestId = response.headers().firstValue("X-Request-ID").orElseThrow();
+        assertTrue(response.body().contains(requestId));
+    }
+
+    @Test
+    void unknownEnumExplainsAllowedValues() throws Exception {
+        var response = post(VALID_REQUEST.replace("MINOR_DAMAGE", "UNKNOWN_DAMAGE"));
+        assertEquals(400, response.statusCode());
+        assertTrue(response.body().contains("INVALID_ENUM"));
+        assertTrue(response.body().contains("vehicle.damageClassification"));
+        assertTrue(response.body().contains("MINOR_DAMAGE"));
+        assertTrue(response.body().contains("MODERATE_DAMAGE"));
+        assertTrue(response.body().contains("NOT_INFORMED"));
+    }
+
+    @Test
+    void invalidNumberIdentifiesItsField() throws Exception {
+        var response = post(VALID_REQUEST.replace("10000", "\"abc\""));
+        assertEquals(400, response.statusCode());
+        assertTrue(response.body().contains("values.bidAmount"));
+        assertTrue(response.body().contains("INVALID_FORMAT"));
+    }
 }
