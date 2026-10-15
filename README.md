@@ -66,7 +66,7 @@ No build or code generation was run for this configuration change, as requested.
 | CreateSimulationCommand | application.port.in.command | Input record independent of HTTP |
 | CreateSimulationUseCase | application.port.in | Input port |
 | CreateSimulationService | application.service | Coordinates the use case |
-| SimulationCalculator | domain.service | Calculation rules placeholder |
+| SimulationCalculator | domain.service | Calculation and rounding rules |
 | Simulation, Vehicle, SimulationValues, SimulationResult | domain.model | Domain records |
 | DamageClassification | domain.model | Domain enum, separate from the generated enum |
 | SimulationRepository | application.port.out | Output port |
@@ -74,7 +74,7 @@ No build or code generation was run for this configuration change, as requested.
 | SimulationConfiguration | config | Connects plain application/domain classes to Spring |
 
 The adapter calls the input port using constructor injection. SimulationConfiguration supplies CreateSimulationService.
-The service receives SimulationCalculator and SimulationRepository; its TODOs describe the calls to implement.
+The service calculates the result through SimulationCalculator and saves the simulation through SimulationRepository.
 No JPA dependency or database has been added. Add persistence entities and Spring Data types only in the output adapter when choosing storage.
 
 The request conversion belongs to the web adapter because it knows both the generated transport DTO and the application command.
@@ -157,3 +157,8 @@ The HTTP integration tests include missing fields, malformed JSON and an
 invalid UUID. Run them with JDK 25. For a reported 400, retain the response
 body and X-Request-ID to identify its cause; adding diagnostics alone does not
 establish the cause of an earlier failed request.
+
+
+### Test database
+
+Spring integration tests activate the `test` profile. Its H2 database is in memory, with a unique name per context and create-drop schema management. Tests do not open the local file database. Run `./mvnw test` with Java 25.
