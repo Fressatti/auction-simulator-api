@@ -43,4 +43,32 @@ public class SimulationApiMapper {
 
         return response;
     }
+
+    public com.example.auction.adapter.in.web.dto.SimulationDetailResponse toDetailResponse(Simulation simulation) {
+        final var sourceVehicle = simulation.vehicle();
+        final var vehicle = new com.example.auction.adapter.in.web.dto.Vehicle();
+        vehicle.setMake(sourceVehicle.make());
+        vehicle.setModel(sourceVehicle.model());
+        vehicle.setColor(sourceVehicle.color());
+        vehicle.setAuctionDate(sourceVehicle.auctionDate());
+        vehicle.setAuctioneer(sourceVehicle.auctioneer());
+        vehicle.setDamageClassification(
+                com.example.auction.adapter.in.web.dto.Vehicle.DamageClassificationEnum.fromValue(
+                        sourceVehicle.damageClassification().name()));
+
+        final var sourceValues = simulation.values();
+        final var values = new com.example.auction.adapter.in.web.dto.SimulationValues();
+        values.setBidAmount(sourceValues.bidAmount());
+        values.setCommissionPercentage(sourceValues.commissionPercentage());
+        values.setOtherCosts(sourceValues.otherCosts());
+        values.setEstimatedResalePrice(sourceValues.estimatedResalePrice());
+
+        final var response = new com.example.auction.adapter.in.web.dto.SimulationDetailResponse();
+        response.setId(simulation.id());
+        response.setVehicle(vehicle);
+        response.setValues(values);
+        response.setResult(toResponse(simulation).getResult());
+        response.setCreatedAt(simulation.createdAt().atOffset(java.time.ZoneOffset.UTC));
+        return response;
+    }
 }
