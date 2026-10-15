@@ -1,6 +1,7 @@
 package com.example.auction.config;
 
 import com.example.auction.application.port.in.CreateSimulationUseCase;
+import com.example.auction.application.service.CreateSimulationService;
 import com.example.auction.application.port.out.SimulationRepository;
 import com.example.auction.domain.service.SimulationCalculator;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +23,7 @@ public class SimulationConfiguration {
     @Bean
     public CreateSimulationUseCase createSimulationUseCase(
             SimulationCalculator calculator, SimulationRepository repository) {
-        return new com.example.auction.config.CreateSimulationService(calculator, repository);
+        return new CreateSimulationService(calculator, repository);
     }
 }
+
