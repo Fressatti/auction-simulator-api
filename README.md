@@ -26,7 +26,7 @@ Tests: `./mvnw test` (Windows: `.\mvnw.cmd test`).
 - adapter/out/persistence: storage implementations.
 - config: dependency wiring.
 
-This is a starter skeleton. Simulation endpoints, calculation rules, persistence and OpenAPI code generation are not implemented yet. Package documentation marks the intended boundaries.
+This is a starter skeleton. Business operations and persistence are not implemented yet. OpenAPI generation is configured; endpoint placeholders return HTTP 501. Package documentation marks the intended boundaries.
 
 ## Conventions
 
@@ -35,3 +35,24 @@ All source code, identifiers, API contracts, error messages, documentation and c
 ## Verification
 
 The initial build could not resolve dependencies because Maven Central was unreachable in the preparation environment. Run the test command locally before starting implementation.
+
+## Contract-first generation
+
+Source of truth: `docs/openapi.yaml`.
+
+Generate sources without compiling or packaging:
+
+- Windows: `.\\mvnw.cmd generate-sources`
+- Linux/macOS: `./mvnw generate-sources`
+
+Generated output: `target/generated-sources/openapi/src/main/java`.
+The plugin generates `SimulationsApi`, `SimulationsApiController`, `SimulationsApiDelegate`, DTOs and `ApiUtil`.
+The generated controller injects the handwritten `SimulationApiDelegateImpl` Spring bean.
+Implement application use cases there; map DTOs into domain objects at this boundary.
+
+Do not edit or commit generated sources. Regenerate them after editing the contract.
+Code generation also runs before compilation during the normal Maven lifecycle.
+This configuration generates server code, not Swagger UI.
+The handwritten delegate returns HTTP 501 placeholders until business operations are implemented; 501 is not a completed business response defined by the contract.
+
+No build or code generation was run for this configuration change, as requested.
