@@ -14,6 +14,12 @@ public class SimulationPersistenceAdapter implements SimulationRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public java.util.Optional<Simulation> findById(java.util.UUID id) {
+        return repository.findById(id).map(SimulationEntity::toDomain);
+    }
+
+    @Override
     @Transactional
     public Simulation save(Simulation simulation) {
         return repository.saveAndFlush(SimulationEntity.fromDomain(simulation)).toDomain();

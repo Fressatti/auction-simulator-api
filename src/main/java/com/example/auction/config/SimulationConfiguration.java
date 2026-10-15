@@ -9,6 +9,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SimulationConfiguration {
     @Bean
+    public com.example.auction.application.port.in.GetSimulationUseCase getSimulationUseCase(
+            SimulationRepository repository) {
+        return new com.example.auction.application.service.GetSimulationService(repository);
+    }
+
+    @Bean
     public SimulationCalculator simulationCalculator() {
         return new SimulationCalculator();
     }

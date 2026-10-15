@@ -23,11 +23,14 @@ import com.example.auction.domain.model.Simulation;
 public class SimulationApiDelegateAdapter implements SimulationsApiDelegate {
     private final CreateSimulationUseCase createSimulationUseCase;
     private final SimulationApiMapper mapper;
+    private final com.example.auction.application.port.in.GetSimulationUseCase getSimulationUseCase;
 
     public SimulationApiDelegateAdapter(CreateSimulationUseCase createSimulationUseCase,
-                                        SimulationApiMapper mapper) {
+                                        SimulationApiMapper mapper,
+                                        com.example.auction.application.port.in.GetSimulationUseCase getSimulationUseCase) {
         this.createSimulationUseCase = createSimulationUseCase;
         this.mapper = mapper;
+        this.getSimulationUseCase = getSimulationUseCase;
     }
 
     @Override
@@ -45,7 +48,7 @@ public class SimulationApiDelegateAdapter implements SimulationsApiDelegate {
 
     @Override
     public ResponseEntity<SimulationResponse> getSimulationById(UUID id) {
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        return ResponseEntity.ok(mapper.toResponse(getSimulationUseCase.execute(id)));
     }
 
     @Override

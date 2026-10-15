@@ -121,3 +121,19 @@ Run `./mvnw test` (Windows: `.\mvnw.cmd test`) with JDK 25.
 `SimulationPersistenceIntegrationTests` exercises the create delegate through
 the real mapper, calculator, service and JPA adapter, and checks the inserted
 row in an isolated in-memory H2 database. It does not exercise HTTP transport.
+
+## Get a simulation by ID
+
+`GET /simulations/{id}` retrieves a persisted simulation and returns HTTP 200
+with `id` and `result`. An unknown UUID returns HTTP 404 with
+`code: SIMULATION_NOT_FOUND`, a message and an empty `fields` array.
+The application service uses the repository output port; JPA stays in the adapter.
+
+`GetSimulationHttpIntegrationTests` uses a real HTTP server on a random port
+and an isolated in-memory H2 database to cover successful retrieval and 404.
+List, update and delete operations still return HTTP 501.
+
+For a manual file-persistence check, create a simulation with POST, retain its
+ID, stop the application, restart from the same working directory using the
+local profile, then call GET with that ID. This restart scenario is not covered
+by the in-memory integration tests.
